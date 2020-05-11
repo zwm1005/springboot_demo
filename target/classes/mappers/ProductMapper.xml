@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shsxt.tmall.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.shsxt.tmall.vo.Product" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sub_title" property="subTitle" jdbcType="VARCHAR" />
+    <result column="original_price" property="originalPrice" jdbcType="REAL" />
+    <result column="promote_Price" property="promotePrice" jdbcType="REAL" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, sub_title, original_price, promote_Price, stock, cid, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.shsxt.tmall.vo.Product" >
+    insert into t_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="subTitle != null" >
+        sub_title,
+      </if>
+      <if test="originalPrice != null" >
+        original_price,
+      </if>
+      <if test="promotePrice != null" >
+        promote_Price,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null" >
+        #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPrice != null" >
+        #{originalPrice,jdbcType=REAL},
+      </if>
+      <if test="promotePrice != null" >
+        #{promotePrice,jdbcType=REAL},
+      </if>
+      <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.shsxt.tmall.vo.Product" >
+    update t_product
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null" >
+        sub_title = #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPrice != null" >
+        original_price = #{originalPrice,jdbcType=REAL},
+      </if>
+      <if test="promotePrice != null" >
+        promote_Price = #{promotePrice,jdbcType=REAL},
+      </if>
+      <if test="stock != null" >
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="selectByParams" resultType="com.shsxt.tmall.vo.Product" parameterType="com.shsxt.tmall.query.ProductQuery">
+    select p.id,p.name,p.sub_title,p.original_price,p.promote_Price,p.stock,p.cid,p.create_date,p.update_date
+    from t_product p left join t_category c on p.cid = c.id
+    <where>
+    1=1
+      <if test="name != null and name != ''">
+        and p.name like concat('%',#{name},'%')
+      </if>
+      <if test="categoryName != null and categoryName != ''">
+        and c.name like concat('%',#{categoryName},'%')
+      </if>
+
+      <if test="level != null">
+        <if test="0==level">
+          and p.original_price &lt;=100
+        </if>
+        <if test="1==level">
+          and p.original_price &gt;100 and p.original_price &lt;=500
+        </if>
+        <if test="2==level">
+          and p.original_price &gt;500 and p.original_price &lt;=2000
+        </if>
+        <if test="3==level">
+          and p.original_price &gt;2000 and p.original_price &lt;=5000
+        </if>
+        <if test="4==level">
+          having p.original_price &gt;5000.0
+        </if>
+      </if>
+
+    </where>
+  </select>
+</mapper>
